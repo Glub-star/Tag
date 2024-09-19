@@ -10,8 +10,11 @@ screen.setup(500,500) # Window Scale
 screen.tracer(0,0)
 screen.bgcolor("white")
 t.listen()
-FONT = ('Arial', 18, 'normal')
-FPS = 60
+FONT = ('Arial', 15, 'normal')
+FPS = 400
+
+score_turtle = t.Turtle()
+score_turtle.penup()
 
 class rect:
     def __init__(self, position_x = 0, position_y=0, size_x=10, size_y=10, rotation = 0, colour = "black") :
@@ -45,6 +48,7 @@ class Player(rect):
         self.dx = 0
         self.dy = 0
         self.colour = colour
+        self.score = 0
     def move(self, direction = (0,0)):
         self.dx = self.x + direction[0]
         self.dy = self.y + direction[1]
@@ -59,6 +63,14 @@ class Player(rect):
         
         self.x = self.dx
         self.y = self.dy
+
+def draw_scores():
+    
+    score_turtle.goto(-250,215)
+    score_turtle.write(f"Red : {round(player_1.score,2)}", font = FONT)
+    score_turtle.goto(-250, 200)
+    score_turtle.write(f"Blue : {round(player_2.score,2)}", font = FONT)
+
 
 #region Input system
 
@@ -113,26 +125,27 @@ tag = random.randint(1,2)
 
 while game_loop:
     tick(FPS) # FPS limit
+    player_speed = 500 / FPS
 
     if watched_keys['w'].down:
-        player_1.move((0,5))
+        player_1.move((0,player_speed))
     if watched_keys['s'].down:
-        player_1.move((0,-5))
+        player_1.move((0,-player_speed))
     if watched_keys['a'].down:
-        player_1.move((-5,0))
+        player_1.move((-player_speed,0))
     if watched_keys['d'].down:
-        player_1.move((5,0))
+        player_1.move((player_speed,0))
     #if watched_keys['space'].down:
     #    projectiles.append(rect(position_x=player.x,position_y = player.y,colour="lightblue"))
     
     if watched_keys['Up'].down:
-        player_2.move((0,5))
+        player_2.move((0,player_speed))
     if watched_keys['Down'].down:
-        player_2.move((0,-5))
+        player_2.move((0,-player_speed))
     if watched_keys['Left'].down:
-        player_2.move((-5,0))
+        player_2.move((-player_speed,0))
     if watched_keys['Right'].down:
-        player_2.move((5,0))
+        player_2.move((player_speed,0))
 
     if player_1.x < player_2.x+10 and player_1.x+10 > player_2.x and  player_1.y <player_2.y+10 and player_1.y+10 >player_2.y and tag_cooldown_time < 0:
         print("Collison! ")
@@ -145,10 +158,12 @@ while game_loop:
         player_1.colour = "yellow"
     else: 
         player_1.colour = "red"
+        player_1.score += 1 / FPS
     if tag == 2:
-        player_2.colour = "yellow"
+        player_2.colour = "yellow" 
     else: 
         player_2.colour = "blue"
+        player_2.score += 1 / FPS
 
     player_1.draw()
     player_2.draw()
@@ -157,7 +172,7 @@ while game_loop:
     
     frame +=1
     
-
+    draw_scores()
     keys= []
     t.update()
     player_1.turtle.clear()
@@ -166,4 +181,5 @@ while game_loop:
     #print(f"tag cooldown : {tag_cooldown_time}")
     #print(f"Frame {frame} done")
     t.clear()
+    score_turtle.clear()
     
